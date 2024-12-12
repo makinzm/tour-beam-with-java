@@ -63,6 +63,26 @@ FLINK_JOB_MANAGER_POD=$(kubectl get pod | grep flink-jobmanager | awk '{print $1
 kubectl cp beam-app/build/libs/beam-app.jar $FLINK_JOB_MANAGER_POD:/opt/flink/lib/
 ```
 
+### Run ( IN PROGRESS )
+
+#### 01. Run Consumer
+
+- Create a consumer pod.
+```shell
+kubectl run kafka-client --restart='Never' --image docker.io/bitnami/kafka:3.9.0-debian-12-r1 --command -- sleep infinity
+```
+
+- Execute the consumer.
+```shell
+KAFKA_POD_IP=$(kubectl get pod -l app.kubernetes.io/name=kafka -o jsonpath='{.items[0].status.podIP}')
+
+kubectl exec -it kafka-client -- kafka-console-consumer.sh \
+    --bootstrap-server $KAFKA_POD_IP:9092 \
+    --topic output-topic \
+    --from-beginning
+```
+
+
 # Reference
 
 - [Tour of Beam](https://tour.beam.apache.org/tour/java/introduction/guide)
