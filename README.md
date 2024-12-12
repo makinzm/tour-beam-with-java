@@ -46,6 +46,23 @@ helm upgrade kafka oci://registry-1.docker.io/bitnamicharts/kafka \
     --set controller.replicaCount=2
 ```
 
+### Beam
+
+```shell
+pushd beam-app
+
+docker run --rm -v $(pwd):/workspace -w /workspace gradle:7.6-jdk11 gradle build
+
+popd
+```
+
+- Copy the jar file to the flink job manager pod.
+
+```shell
+FLINK_JOB_MANAGER_POD=$(kubectl get pod | grep flink-jobmanager | awk '{print $1}')
+kubectl cp beam-app/build/libs/beam-app.jar $FLINK_JOB_MANAGER_POD:/opt/flink/lib/
+```
+
 # Reference
 
 - [Tour of Beam](https://tour.beam.apache.org/tour/java/introduction/guide)

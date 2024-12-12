@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://packages.confluent.io/maven/'
+    }
+}
+
+dependencies {
+    // Apache Beam Core SDK
+    implementation 'org.apache.beam:beam-sdks-java-core:2.16.0'
+
+    // Kafka IO (データストリーム用)
+    implementation 'org.apache.beam:beam-sdks-java-io-kafka:2.16.0'
+
+    // Flink Runner
+    implementation 'org.apache.beam:beam-runners-flink_2.11:2.16.0'
+
+    // Schema Registry Client (必要に応じて追加)
+    implementation 'io.confluent:kafka-schema-registry-client:7.6.0'
+}
+
