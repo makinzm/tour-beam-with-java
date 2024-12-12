@@ -3,13 +3,13 @@
 
 ## SetUp
 
-### Flink
-
 ```shell
 kubectl create namespace flink
 
 kubectl config set-context --current --namespace=flink
 ```
+
+### Flink
 
 ```shell
 pushd k8s/flink
@@ -25,6 +25,7 @@ popd
 - Check UI
 
 ```shell
+kill -9 $(lsof -i:8081)
 kubectl port-forward deployment/flink-jobmanager 8081:8081
 ```
 
@@ -32,9 +33,21 @@ kubectl port-forward deployment/flink-jobmanager 8081:8081
 open http://localhost:8081
 ```
 
+### Kafka
+
+```shell
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm install kafka oci://registry-1.docker.io/bitnamicharts/kafka
+```
+- Decrease the number of replicas to make it easier to test in local environment.
+```shell
+helm upgrade kafka oci://registry-1.docker.io/bitnamicharts/kafka \
+    --set controller.replicaCount=2
+```
 
 # Reference
 
 - [Tour of Beam](https://tour.beam.apache.org/tour/java/introduction/guide)
 - [Kubernetes | Apache Flink](https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/standalone/kubernetes/)
-
+- [kafka 31.1.0 · bitnami/bitnami](https://artifacthub.io/packages/helm/bitnami/kafka)
