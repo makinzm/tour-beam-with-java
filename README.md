@@ -65,6 +65,52 @@ kubectl cp beam-app/build/libs/beam-app.jar $FLINK_JOB_MANAGER_POD:/opt/flink/li
 
 ### Run ( IN PROGRESS )
 
+#### 00. Create topic
+
+- Create a topic.
+```shell
+KAFKA_POD_IP=kafka.default.svc.cluster.local:9092
+
+kubectl exec -it kafka-client -- kafka-topics.sh \
+    --bootstrap-server $KAFKA_POD_IP \
+    --create \
+    --topic test-topic \
+    --partitions 1 \
+    --replication-factor 1
+
+kubectl exec -it kafka-client -- kafka-topics.sh \
+    --bootstrap-server $KAFKA_POD_IP \
+    --create \
+    --topic output-topic \
+    --partitions 1 \
+    --replication-factor 1
+```
+- TIMEOUT ERROR => Why...?
+
+```shell
+
+❯ KAFKA_POD_IP=kafka.default.svc.cluster.local:9092
+
+kubectl exec -it kafka-client -- kafka-topics.sh \
+    --bootstrap-server $KAFKA_POD_IP \
+    --create \
+    --topic test-topic \
+    --partitions 1 \
+    --replication-factor 1
+
+kubectl exec -it kafka-client -- kafka-topics.sh \
+    --bootstrap-server $KAFKA_POD_IP \
+    --create \
+    --topic output-topic \
+    --partitions 1 \
+    --replication-factor 1
+Error while executing topic command : Call(callName=createTopics, deadlineMs=1734017108908, tries=50, nextAllowedTryMs=1734017109909) timed out at 1734017108909 after 50 attempt(s)
+[2024-12-12 15:25:08,914] ERROR org.apache.kafka.common.errors.TimeoutException: Call(callName=createTopics, deadlineMs=1734017108908, tries=50, nextAllowedTryMs=1734017109909) timed out at 1734017108909 after 50 attempt(s)
+Caused by: org.apache.kafka.common.errors.DisconnectException: Cancelled createTopics request with correlation id 203 due to node 0 being disconnected
+ (org.apache.kafka.tools.TopicCommand)
+command terminated with exit code 1
+```
+
 #### 01. Run Consumer
 
 - Create a consumer pod.
@@ -74,12 +120,12 @@ kubectl run kafka-client --restart='Never' --image docker.io/bitnami/kafka:3.9.0
 
 - Execute the consumer.
 ```shell
-KAFKA_POD_IP=$(kubectl get pod -l app.kubernetes.io/name=kafka -o jsonpath='{.items[0].status.podIP}')
+KAFKA_POD_IP=kafka.default.svc.cluster.local:9092
 
 kubectl exec -it kafka-client -- kafka-console-consumer.sh \
     --bootstrap-server $KAFKA_POD_IP:9092 \
     --topic output-topic \
-    --from-beginning
+    --from-beginnine
 ```
 
 
